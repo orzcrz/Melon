@@ -145,31 +145,7 @@ function setup_rbenv() {
 ## cocoapods
 function setup_cocoapods() {
   log_info "==> 尝试安装 cocoapods"
-  if command -v pod 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
-  else
-    log_info "安装路径为：$HOME/.gem/"
-    
-    ## M1
-    gem install cocoapods --user-install && log_info "已安装 cocoapods"
-
-    ## intel
-    # gem install -n /usr/local/bin cocoapods && log_info "已安装 cocoapods"
-  fi
-
-  log_info "导入环境变量"
-  local install_dir=`gem env | grep "USER INSTALLATION DIRECTORY" | awk -F":" '{ print  $2 }' | tr -d '[:space:]'`
-  local bin_dir="$install_dir/bin"
-  echo -e "\n## gem" >> $zprofile
-  echo 'export PATH=$PATH:$(ruby -e 'print Gem.user_dir')/bin' >> $zprofile
-  echo 'export PATH="$PATH:$GEM_HOME/bin"' >> $zprofile
-
-  source $HOME/.zprofile
-  if command -v pod 1>/dev/null 2>&1; then
-    log_info "安装成功"
-  else
-    log_error "安装失败"
-  fi
+  log_warning "算了，手动装吧，先用 rbenv 切换 ruby 到 cocoapods 需要的版本"
 }
 
 # 安装lldb工具
@@ -184,9 +160,9 @@ function setup_node() {
   brew install node && log_info "已安装 Node.js"
   ## 查看当前的镜像
   ## 原 https://registry.npmjs.org
-  log_info "原镜像：$(npm get registry)"
+  log_info "镜像：$(npm get registry)"
   ## 将地址设置为淘宝镜像
-  npm config set registry https://registry.npm.taobao.org/
+  npm config set registry https://registry.npmmirror.com/
   log_info "修改镜像为：$(npm get registry)"
 }
 
@@ -196,7 +172,7 @@ echo "  准备配置环境"
 echo "################################"
 echo "$(tput sgr0)"
 
-setup_bstools
+setup_melon
 
 log_warning "更新以下配置"
 log_warning "$HOME/.zshrc"
@@ -228,15 +204,8 @@ setup_cocoapods
 setup_lldb_chisel
 setup_node
 
-# brew tap homebrew/cask
-# 安装vscode
-# brew install --cask visual-studio-code
-
 echo "$(tput setaf 2)"
 echo "################################"
 echo "  安装完成"
 echo "################################"
 echo "$(tput sgr0)"
-
-## 切换到zsh
-# chsh -s /bin/zsh
