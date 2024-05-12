@@ -87,20 +87,6 @@ function setup_melon() {
   git clone --recurse-submodules $tools_url "$root_dir"
   log_info "已下载最新版本到本地"
 
-  log_info "导入环境变量"
-  local pattern="## bstools"
-  local env="export BSTOOLS_ROOT=\$HOME/.bstools\nexport PATH=\$BSTOOLS_ROOT/bin:\$PATH"
-  local line="$pattern\n$env"
-  local files=(
-    $zprofile
-  )
-  for i in "${!files[@]}"; do
-    local file="${files[i]}"
-    if [[ -f "$file" ]];then
-      grep -F "$pattern" "$file" 1>/dev/null 2>&1 || echo -e "$line" >> "$file"
-    fi
-  done
-
   cd "$root_dir"
   local py3=$(which python3)
   log_info "Use python3 path: $py3"
