@@ -50,10 +50,6 @@ function setup_melon() {
 function setup_brew_if_needed() {
   log_info "==> 尝试安装 Homebrew"
 
-  local bottles_url=https://mirrors.ustc.edu.cn/homebrew-bottles/bottles/
-  local repo_url=https://mirrors.ustc.edu.cn/brew.git
-  local core_url=https://mirrors.ustc.edu.cn/homebrew-core.git
-
   local cpu_brand=$(sysctl -n machdep.cpu.brand_string)
   local cpu_arch=$(uname -m)
   log_info "处理器信息： $cpu_brand | $cpu_arch"
@@ -68,28 +64,9 @@ function setup_brew_if_needed() {
       sudo chown -R $(whoami) $brew_repo
       curl -L $remote_url | tar xz --strip 1 -C $brew_repo
     fi
-
-    log_info "导入环境变量"    
-    echo -e "\n## homebrew" >> $zprofile
-    echo "export PATH=$brew_repo/bin:\$PATH" >> $zprofile
-    echo "export PATH=$brew_repo/sbin:\$PATH" >> $zprofile
-    echo "export HOMEBREW_BOTTLE_DOMAIN=$bottles_url" >> $zprofile
-    echo "export HOMEBREW_BREW_GIT_REMOTE=$repo_url" >> $zprofile
-    echo "export HOMEBREW_CORE_GIT_REMOTE=$core_url" >> $zprofile
-    echo "export HOMEBREW_NO_INSTALL_FROM_API=1" >> $zprofile
-
   else
     log_warning "非arm版的没适配，先手动预装吧"
     log_info '手动执行这段 ==> /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"'
-
-    # 装好了就插入环境变量
-    # if command -v brew 1>/dev/null 2>&1; then
-    #   echo -e "\n## homebrew" >> $zprofile
-    #   echo "export HOMEBREW_BOTTLE_DOMAIN=$bottles_url" >> $zprofile
-    #   echo "export HOMEBREW_BREW_GIT_REMOTE=$repo_url" >> $zprofile
-    #   echo "export HOMEBREW_CORE_GIT_REMOTE=$core_url" >> $zprofile
-    #   echo "export HOMEBREW_NO_INSTALL_FROM_API=1" >> $zprofile
-    # fi
   fi
 
   cd $HOME
