@@ -49,7 +49,6 @@ function setup_melon() {
 # arm版本的Mac上安装Homebrew
 function setup_brew_if_needed() {
   log_info "==> 尝试安装 Homebrew"
-
   local cpu_brand=$(sysctl -n machdep.cpu.brand_string)
   local cpu_arch=$(uname -m)
   log_info "处理器信息： $cpu_brand | $cpu_arch"
@@ -68,7 +67,6 @@ function setup_brew_if_needed() {
     log_warning "非arm版的没适配，先手动预装吧"
     log_info '手动执行这段 ==> /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"'
   fi
-
   cd $HOME
   source $HOME/.zprofile
   if command -v brew 1>/dev/null 2>&1; then
@@ -87,19 +85,6 @@ function setup_pyenv() {
   else
     brew install pyenv pyenv-virtualenv && log_info "已安装 pyenv"
   fi
-
-  log_info "导入环境变量"
-  echo -e "\n## pyenv" >> $zprofile
-  echo 'export PYENV_ROOT=$HOME/.pyenv' >> $zprofile
-  echo 'export PATH=$PYENV_ROOT/shims:$PATH' >> $zprofile
-  echo 'if command -v pyenv 1>/dev/null 2>&1; then' >> $zprofile
-  echo '  eval "$(pyenv init -)"' >> $zprofile
-  echo '  eval "$(pyenv virtualenv-init -)"' >> $zprofile
-  echo 'fi' >> $zprofile
-
-  log_info "pip源已在$HOME/.pip中配置"
-
-  source $HOME/.zprofile
   if command -v pyenv 1>/dev/null 2>&1; then
     log_info "安装成功"
   else
