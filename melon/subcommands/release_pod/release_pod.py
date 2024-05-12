@@ -53,12 +53,10 @@ class ReleasePod:
     def args_parser(self, parser):
         self._args_parser = parser
         parser.add_argument('--pod-patch',
-                            required=False,
                             const=True,
                             nargs='?',
                             help='增加 pod 补丁，按照当前 pod 版本的路径添加')
         parser.add_argument('--pod-plugin',
-                            required=False,
                             const=True,
                             nargs='?',
                             help='增加 pod 插件，按照当前 pod 版本的路径添加')
@@ -107,6 +105,7 @@ class ReleasePod:
 
         self.end_loading()
         self.postflight()
+        return True
 
     @staticmethod
     def preflight(args):

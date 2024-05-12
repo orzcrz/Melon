@@ -77,7 +77,7 @@ class Git:
         ]
         logger.debug('Running: %r', cmd)
         if Git.verbose:
-            return tag == subprocess.check_output(cmd).decode()
+            return tag == subprocess.check_output(cmd).decode().strip()
         process = subprocess.Popen(cmd,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
