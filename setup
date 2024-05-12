@@ -135,23 +135,6 @@ function setup_rbenv() {
     brew install rbenv ruby-build rbenv-vars && log_info "已安装 rbenv"
   fi
 
-  log_info "==> 尝试将Ruby换成国内源"
-  gem sources | grep 'http' | while read line; do
-    gem source -r $line
-  done
-  gem source -a https://gems.ruby-china.com
-  log_info "当前Ruby源为：https://gems.ruby-china.com"
-
-  log_info "导入环境变量"
-  local mirror_url=https://cache.ruby-china.com
-  echo -e "\n## rbenv" >> $zprofile
-  echo 'export PATH=$HOME/.rbenv/bin:$PATH' >> $zprofile
-  echo "export RUBY_BUILD_MIRROR_URL=$mirror_url" >> $zprofile
-  echo 'if command -v rbenv 1>/dev/null 2>&1; then' >> $zprofile
-  echo '  eval "$(rbenv init -)"' >> $zprofile
-  echo 'fi' >> $zprofile
-
-  source $HOME/.zprofile
   if command -v rbenv 1>/dev/null 2>&1; then
     log_info "安装成功"
   else
