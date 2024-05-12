@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Created by crzorz on 2022/09/15
+# Copyright © 2022 BaldStudio. All rights reserved.
+
+set -e
+set -u
+set -o pipefail
+
+# 获取脚本文件所在的目录
+MELON=$(dirname "${BASH_SOURCE[0]}")
+
+# 激活 venv
+source "${MELON}/../venv/bin/activate"
+
+# 添加 python 模块的搜索目录
+export "PYTHONPATH=${MELON}/.."
+
+# 运行 melon
+python "${MELON}/../melon/__main__.py" "$@"
