@@ -17,7 +17,7 @@ from melon.foundation.logging import *
 '''
 命令行解释器
 '''
-parser = argparse.ArgumentParser(prog='melon',
+parser = argparse.ArgumentParser(prog='me',
                                  description="命令行工具箱",
                                  epilog='工具箱版本 %s' % __version__)
 
@@ -51,7 +51,6 @@ for command_class in __subcommands__:
 
 def main():
     args = parser.parse_args()
-
     # 设置日志输出级别
     if args.verbose:
         logger.set_level(LogLevel.DEBUG)

@@ -21,6 +21,9 @@ POD_SPEC_REPO_NAME = 'baldstudio'
 POD_SPEC_REPO_URL = 'git@github.com:BaldStudio/baldstudio-specs.git'
 POD_SPEC_REPO_ROOT_DIR = os.path.join(os.path.expanduser('~'), '.cocoapods/repos')
 
+POD_PATCH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cocoapods_patches')
+POD_PLUGIN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cocoapods_plugins')
+
 gem = shutil.which('gem')
 pod = shutil.which('pod')
 
@@ -72,7 +75,7 @@ class Pod:
 
     @staticmethod
     def push_spec_to_remote(podspec_file):
-        logger.debug('发布podspec')
+        logger.debug('发布 odspec')
         repo_name = Pod.find_pod_repo_dir_name()
         cmd = [
             pod, 'repo', 'push', repo_name, podspec_file,
@@ -82,14 +85,31 @@ class Pod:
         logger.debug('Running: %r', cmd)
         subprocess.check_output(cmd)
 
+    @staticmethod
+    def install_plugins():
+        cmd = [
+            gem, 'install',
+        ]
+        plugin_dir = POD_PLUGIN_DIR
+        for root, _, files in os.walk(plugin_dir):
+            for f in files:
+                if f.endswith('.gem'):
+                    src_file = os.path.join(root, f)
+                    src_file = os.path.abspath(src_file)
+                    logger.debug('🩹 找到插件文件 %s' % src_file)
+                    logger.info('🩹 安装插件 %s' % src_file)
+                    cmd.append(src_file)
+        logger.debug('Running: %r', cmd)
+        subprocess.check_output(cmd)
+
     # 给 cocoapods 打补丁
     @staticmethod
-    def patched():
+    def install_patches():
         cocoapods_dir = Pod.find_cocoapods_dir()
         if not cocoapods_dir:
             logger.error('cocoapods path is not found')
             return
-        patch_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cocoapods_patch')
+        patch_dir = POD_PATCH_DIR
         for root, _, files in os.walk(patch_dir):
             for f in files:
                 if f.endswith('.rb'):
@@ -127,7 +147,7 @@ class Pod:
                 os.chdir(os.path.join(repos_dir, d))
                 current = Git.remote_url
                 if current.lower() == POD_SPEC_REPO_URL.lower():
-                    logger.debug('当前 KamiVision 仓库名称为 %s', d)
+                    logger.debug('当前私有仓库名称为 %s', d)
                     return d
         logger.error('找不到 %s 仓库', POD_SPEC_REPO_NAME)
 

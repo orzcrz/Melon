@@ -6,27 +6,61 @@
 set -e
 set -o pipefail
 
-source ./scripts/logger.sh
+logging() {
+  local log_type
+  log_type=$1
+  readonly log_type
+
+  local msg
+  msg=$2
+  readonly msg
+
+  local now
+  now=$(date +'%F %H:%M:%S')
+  readonly now
+
+  local log_format="[${now}][${log_type}] ${msg}"
+
+  case $log_type in
+  INFO)
+    echo "\033[32m${log_format}\033[0m"
+    ;;
+  WARNING)
+    echo "\033[33m${log_format}\033[0m"
+    ;;
+  ERROR)
+    echo "\033[31m${log_format}\033[0m"
+    ;;
+  esac
+}
+
+log_info() {
+  logging INFO "$*"
+}
+
+log_warning() {
+  logging WARNING "$*"
+}
+
+log_error() {
+  logging ERROR "$*"
+}
 
 cd $HOME
 
-root_dir="$HOME/.melon"
-profiles_path=$root_dir/profiles
-
-zshrc=$profiles_path/.zshrc
-zprofile=$profiles_path/.zprofile
-lldbinit=$profiles_path/lldb/.lldbinit
+ROOT_DIR="$HOME/.melon"
+PROFILES_DIR=$ROOT_DIR/profiles
 
 # 安装melon
 function setup_melon() {
   log_info "==> 尝试安装 melon"
 
-  rm -rf "$root_dir"
-  local url=git@github.com:orzcrz/melon.git
-  git clone --recurse-submodules $url "$root_dir"
+  rm -rf "$ROOT_DIR"
+  local url=git@github.com:orzcrz/Melon.git
+  git clone --recurse-submodules $url "$ROOT_DIR"
   log_info "已下载最新版本到本地"
 
-  cd "$root_dir"
+  cd "$ROOT_DIR"
   local py3=$(which python3)
   log_info "Use python3 path: $py3"
   local py3_v=`$py3 -V`
@@ -68,7 +102,6 @@ function setup_brew_if_needed() {
     log_info '手动执行这段 ==> /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"'
   fi
   cd $HOME
-  source $HOME/.zprofile
   if command -v brew 1>/dev/null 2>&1; then
     log_info "安装成功"
   else
@@ -152,16 +185,11 @@ function setup_cocoapods() {
 # https://github.com/facebook/chisel
 function setup_lldb_chisel() {
   brew install chisel && log_info "已安装 chisel"
-  echo -e "\n## chisel" >> $lldbinit
-  echo 'command script import /opt/homebrew/opt/chisel/libexec/fblldb.py' >> $lldbinit
 }
 
 function setup_node() {
   brew install node && log_info "已安装 Node.js"
-  ## 查看当前的镜像
-  ## 原 https://registry.npmjs.org
   log_info "镜像：$(npm get registry)"
-  ## 将地址设置为淘宝镜像
   npm config set registry https://registry.npmmirror.com/
   log_info "修改镜像为：$(npm get registry)"
 }
@@ -177,22 +205,24 @@ setup_melon
 log_warning "更新以下配置"
 log_warning "$HOME/.zshrc"
 log_warning "$HOME/.zprofile"
+log_warning "$HOME/.bash_profile"
 log_warning "$HOME/.lldbinit"
 log_warning "$HOME/.pip"
 log_warning "$HOME/.gitignore_global"
 
-zsh_plugin_path=${profiles_path}/oh-my-zsh/custom/plugins
-log_warning "${zsh_plugin_path}/zsh-syntax-highlighting"
-log_warning "${zsh_plugin_path}/zsh-autosuggestions"
+ZSH_PLUGIN_DIR="$PROFILES_DIR/oh-my-zsh/custom/plugins"
+log_warning "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
+log_warning "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 
 ## 软链当前配置
-ln -sf "$zshrc" $HOME/.zshrc
-ln -sf "$zprofile" $HOME/.zprofile
-ln -sf "$lldbinit" $HOME/.lldbinit
-ln -sf "${profiles_path}"/.pip $HOME/.pip
-ln -sf "${profiles_path}"/.gitignore_global $HOME/.gitignore_global
-ln -sf "${profiles_path}"/zsh-syntax-highlighting "${zsh_plugin_path}"/zsh-syntax-highlighting
-ln -sf "${profiles_path}"/zsh-autosuggestions "${zsh_plugin_path}"/zsh-autosuggestions
+ln -sf "$PROFILES_DIR/.zshrc" "$HOME/.zshrc"
+ln -sf "$PROFILES_DIR/.zprofile" "$HOME/.zprofile"
+ln -sf "$PROFILES_DIR/.bash_profile" "$HOME/.bash_profile"
+ln -sf "$PROFILES_DIR/lldb/.lldbinit" "$HOME/.lldbinit"
+ln -sf "$PROFILES_DIR/.pip" "$HOME/.pip"
+ln -sf "$PROFILES_DIR/.gitignore_global" "$HOME/.gitignore_global"
+ln -sf "$PROFILES_DIR/zsh-syntax-highlighting" "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
+ln -sf "$PROFILES_DIR/zsh-autosuggestions" "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 
 setup_brew_if_needed
 setup_pyenv

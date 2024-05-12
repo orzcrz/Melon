@@ -28,7 +28,7 @@ class ReleasePod:
 
     @property
     def help(self):
-        return 'melon release'
+        return 'me release'
 
     @property
     def description(self):
@@ -56,7 +56,12 @@ class ReleasePod:
                             required=False,
                             const=True,
                             nargs='?',
-                            help='增加 pod 补丁，按照当前 pod 版本的路径添加补丁')
+                            help='增加 pod 补丁，按照当前 pod 版本的路径添加')
+        parser.add_argument('--pod-plugin',
+                            required=False,
+                            const=True,
+                            nargs='?',
+                            help='增加 pod 插件，按照当前 pod 版本的路径添加')
         parser.add_argument('--podspec',
                             type=str,
                             help='指定 podspec 发布')
@@ -70,9 +75,11 @@ class ReleasePod:
 
     def running(self, args) -> bool:
         if args.pod_patch:
-            Pod.patched()
+            Pod.install_patches()
             return True
-
+        if args.pod_plugin:
+            Pod.install_plugins()
+            return True
         env = '稳定版本' if args.stable else '开发版本'
         logger.info('📌 确认发行版本 [ %s ]' % env)
         time.sleep(1)
