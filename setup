@@ -53,9 +53,6 @@ function setup_brew_if_needed() {
   local bottles_url=https://mirrors.ustc.edu.cn/homebrew-bottles/bottles/
   local repo_url=https://mirrors.ustc.edu.cn/brew.git
   local core_url=https://mirrors.ustc.edu.cn/homebrew-core.git
-  # local bottles_url=https://mirrors.aliyun.com/homebrew/homebrew-bottles
-  # local repo_url=https://mirrors.aliyun.com/homebrew/brew.git
-  # local core_url=https://mirrors.aliyun.com/homebrew/homebrew-core.git
 
   local cpu_brand=$(sysctl -n machdep.cpu.brand_string)
   local cpu_arch=$(uname -m)
