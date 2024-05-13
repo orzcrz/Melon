@@ -33,20 +33,24 @@ sh <(curl -fsSL https://raw.githubusercontent.com/orzcrz/Melon/master/setup)
 ## 包含配置
 
 - oh-my-zsh
-- dk_lldb
-- zlldb
+  - zsh-syntax-highlighting
+  - zsh-autosuggestions
+- lldbinit
+  - dk_lldb
+  - zlldb
+  - lldb_chisel
 
 ### 工具包
 
 - homebrew
 - pyenv
+- rbenv
+- nodenv
 - wget
 - cookiecutter
 - tree
-- rbenv
 - ~~cocoapods~~
-- lldb_chisel
-- node
+- ~~node~~
 
 ### 软链
 

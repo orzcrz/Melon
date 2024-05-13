@@ -11,18 +11,20 @@ export HOMEBREW_CORE_GIT_REMOTE=https://mirrors.ustc.edu.cn/homebrew-core.git
 export HOMEBREW_NO_INSTALL_FROM_API=1
 
 ## pyenv
-export PYENV_ROOT=$HOME/.pyenv
-export PATH=$PYENV_ROOT/shims:$PATH
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
 fi
 
 ## rbenv
-export PATH=$HOME/.rbenv/bin:$PATH
 export RUBY_BUILD_MIRROR_URL=https://cache.ruby-china.com
 if command -v rbenv 1>/dev/null 2>&1; then
   eval "$(rbenv init -)"
+fi
+
+## nodenv
+if command -v nodenv 1>/dev/null 2>&1; then
+  eval "$(nodenv init -)"
 fi
 
 ## gem

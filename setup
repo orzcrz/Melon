@@ -125,6 +125,38 @@ function setup_pyenv() {
   fi
 }
 
+## rbenv
+function setup_rbenv() {
+  log_info "==> 尝试安装 rbenv"
+  if command -v rbenv 1>/dev/null 2>&1; then
+    log_info "已存在，跳过安装"
+  else
+    brew install rbenv ruby-build rbenv-vars && log_info "已安装 rbenv"
+  fi
+
+  if command -v rbenv 1>/dev/null 2>&1; then
+    log_info "安装成功"
+  else
+    log_error "安装失败"
+  fi
+}
+
+## nodenv
+function setup_nodenv() {
+    log_info "==> 尝试安装 nodenv"
+  if command -v nodenv 1>/dev/null 2>&1; then
+    log_info "已存在，跳过安装"
+  else
+    brew install nodenv && log_info "已安装 nodenv"
+  fi
+
+  if command -v nodenv 1>/dev/null 2>&1; then
+    log_info "安装成功"
+  else
+    log_error "安装失败"
+  fi
+}
+
 ## wget
 function setup_wget() {
   ## wget
@@ -159,22 +191,6 @@ function setup_tree() {
   brew install tree && log_info "已安装 tree"
 }
 
-## rbenv
-function setup_rbenv() {
-  log_info "==> 尝试安装 rbenv"
-  if command -v rbenv 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
-  else
-    brew install rbenv ruby-build rbenv-vars && log_info "已安装 rbenv"
-  fi
-
-  if command -v rbenv 1>/dev/null 2>&1; then
-    log_info "安装成功"
-  else
-    log_error "安装失败"
-  fi
-}
-
 ## cocoapods
 function setup_cocoapods() {
   log_info "==> 尝试安装 cocoapods"
@@ -184,14 +200,14 @@ function setup_cocoapods() {
 # 安装lldb工具
 # https://github.com/facebook/chisel
 function setup_lldb_chisel() {
+  log_info "==> 尝试安装 chisel"
   brew install chisel && log_info "已安装 chisel"
 }
 
 function setup_node() {
-  brew install node && log_info "已安装 Node.js"
-  log_info "镜像：$(npm get registry)"
-  npm config set registry https://registry.npmmirror.com/
-  log_info "修改镜像为：$(npm get registry)"
+  log_info "==> 尝试安装 node"
+  log_warning "算了，手动装吧，先用 nodenv 切换 node 到需要的版本"
+  log_warning "然后修改镜像 npm config set registry https://registry.npmmirror.com/"
 }
 
 echo "$(tput setaf 2)"
@@ -203,33 +219,37 @@ echo "$(tput sgr0)"
 setup_melon
 
 log_warning "更新以下配置"
+log_warning "$HOME/.pip"
+log_warning "$HOME/.gitignore_global"
+log_warning "$HOME/.lldbinit"
+
 log_warning "$HOME/.zshrc"
 log_warning "$HOME/.zprofile"
 log_warning "$HOME/.bash_profile"
-log_warning "$HOME/.lldbinit"
-log_warning "$HOME/.pip"
-log_warning "$HOME/.gitignore_global"
 
 ZSH_PLUGIN_DIR="$PROFILES_DIR/oh-my-zsh/custom/plugins"
 log_warning "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
 log_warning "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 
 ## 软链当前配置
+ln -sf "$PROFILES_DIR/.pip" "$HOME/.pip"
+ln -sf "$PROFILES_DIR/.gitignore_global" "$HOME/.gitignore_global"
+ln -sf "$PROFILES_DIR/lldb/.lldbinit" "$HOME/.lldbinit"
+
 ln -sf "$PROFILES_DIR/.zshrc" "$HOME/.zshrc"
 ln -sf "$PROFILES_DIR/.zprofile" "$HOME/.zprofile"
 ln -sf "$PROFILES_DIR/.bash_profile" "$HOME/.bash_profile"
-ln -sf "$PROFILES_DIR/lldb/.lldbinit" "$HOME/.lldbinit"
-ln -sf "$PROFILES_DIR/.pip" "$HOME/.pip"
-ln -sf "$PROFILES_DIR/.gitignore_global" "$HOME/.gitignore_global"
+
 ln -sf "$PROFILES_DIR/zsh-syntax-highlighting" "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
 ln -sf "$PROFILES_DIR/zsh-autosuggestions" "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 
 setup_brew_if_needed
 setup_pyenv
+setup_rbenv
+setup_nodenv
 setup_wget
 setup_cookiecutter
 setup_tree
-setup_rbenv
 setup_cocoapods
 setup_lldb_chisel
 setup_node
