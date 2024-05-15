@@ -61,11 +61,11 @@ sh <(curl -fsSL https://raw.githubusercontent.com/orzcrz/Melon/master/setup)
 - ~/.pip
 - ~/.gitignore_global
 
-## 附加项
+## 其他
 
 ### 关于git的提交附带表情
 
-- 出处
+#### 出处
 在gitmoji里扒扒看 ，传送门：https://gitmoji.dev/
 
 #### 常用emoji整理
