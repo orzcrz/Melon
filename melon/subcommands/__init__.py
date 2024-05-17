@@ -6,8 +6,8 @@ Created by changrunze on 2024/5/12
 Copyright © 2024 BaldStudio. All rights reserved.
 """
 
-from .release_pod import ReleasePod
+from .release import Release
 
 __subcommands__ = [
-    ReleasePod,
+    Release,
 ]

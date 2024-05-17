@@ -16,7 +16,7 @@ from .pod import Pod
 from .git import Git
 
 
-class ReleasePod:
+class Release:
     def __init__(self):
         self._args_parser = None
         self._args = None
