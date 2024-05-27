@@ -1,2 +1,9 @@
+# 忽略操作系统文件
 *~
 .DS_Store
+
+# 忽略 IDE 或编辑器文件
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
