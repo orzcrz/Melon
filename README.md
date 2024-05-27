@@ -57,9 +57,10 @@ sh <(curl -fsSL https://raw.githubusercontent.com/orzcrz/Melon/master/setup)
 - ~/.zshrc
 - ~/.zprofile
 - ~/.bash_profile
-- ~/.lldbinit
 - ~/.pip
+- - ~/.lldbinit
 - ~/.gitignore_global
+- ~/.gitconfig
 
 ## 其他
 

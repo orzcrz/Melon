@@ -6,7 +6,7 @@
 set -e
 set -o pipefail
 
-logging() {
+function logging() {
   local log_type
   log_type=$1
   readonly log_type
@@ -34,15 +34,15 @@ logging() {
   esac
 }
 
-log_info() {
+function log_info() {
   logging INFO "$*"
 }
 
-log_warning() {
+function log_warning() {
   logging WARNING "$*"
 }
 
-log_error() {
+function log_error() {
   logging ERROR "$*"
 }
 
@@ -220,8 +220,9 @@ setup_melon
 
 log_warning "更新以下配置"
 log_warning "$HOME/.pip"
-log_warning "$HOME/.gitignore_global"
 log_warning "$HOME/.lldbinit"
+log_warning "$HOME/.gitignore_global"
+log_warning "$HOME/.gitconfig"
 
 log_warning "$HOME/.zshrc"
 log_warning "$HOME/.zprofile"
@@ -233,8 +234,10 @@ log_warning "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 
 ## 软链当前配置
 ln -sf "$PROFILES_DIR/.pip" "$HOME/.pip"
-ln -sf "$PROFILES_DIR/.gitignore_global" "$HOME/.gitignore_global"
 ln -sf "$PROFILES_DIR/lldb/.lldbinit" "$HOME/.lldbinit"
+
+ln -sf "$PROFILES_DIR/.gitignore_global" "$HOME/.gitignore_global"
+ln -sf "$PROFILES_DIR/.gitconfig" "$HOME/.gitconfig"
 
 ln -sf "$PROFILES_DIR/.zshrc" "$HOME/.zshrc"
 ln -sf "$PROFILES_DIR/.zprofile" "$HOME/.zprofile"

@@ -1,0 +1,9 @@
+[user]
+	name = crzorz
+	email = crzorz@outlook.com
+[init]
+	defaultBranch = master
+[color]
+	ui = auto
+[core]
+	autocrlf = input
