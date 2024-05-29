@@ -34,3 +34,8 @@ export PATH="$PATH:$GEM_HOME/bin"
 
 ## Java
 export JAVA_HOME="$(/usr/libexec/java_home)"
+
+## thefuck
+if command -v thefuck 1>/dev/null 2>&1; then
+  eval "$(thefuck --alias)"
+fi

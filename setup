@@ -46,7 +46,7 @@ function log_error() {
   logging ERROR "$*"
 }
 
-cd $HOME
+cd "$HOME"
 
 ROOT_DIR="$HOME/.melon"
 PROFILES_DIR=$ROOT_DIR/profiles
@@ -77,7 +77,7 @@ function setup_melon() {
   python -m pip install --upgrade pip
   set -e
 
-  cd $HOME
+  cd "$HOME"
 }
 
 # arm版本的Mac上安装Homebrew
@@ -94,7 +94,7 @@ function setup_brew_if_needed() {
       local brew_repo=/opt/homebrew
       local remote_url=https://github.com/Homebrew/brew/tarball/master
       sudo mkdir -p $brew_repo
-      sudo chown -R $(whoami) $brew_repo
+      sudo chown -R "$(whoami)" $brew_repo
       curl -L $remote_url | tar xz --strip 1 -C $brew_repo
     fi
   else
