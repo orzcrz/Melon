@@ -7,3 +7,7 @@
 .vscode/
 *.sublime-project
 *.sublime-workspace
+
+# 忽略依赖文件
+node_modules/
+Pods/
