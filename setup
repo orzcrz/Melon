@@ -191,6 +191,16 @@ function setup_tree() {
   brew install tree && log_info "已安装 tree"
 }
 
+## thefuck
+function setup_thefuck() {
+  log_info "==> 尝试安装 thefuck"
+  if command -v fuck 1>/dev/null 2>&1; then
+    log_info "已存在，跳过安装"
+    return
+  fi
+  brew install thefuck && log_info "已安装 thefuck"
+}
+
 ## cocoapods
 function setup_cocoapods() {
   log_info "==> 尝试安装 cocoapods"

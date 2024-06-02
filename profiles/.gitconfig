@@ -8,3 +8,20 @@
 [core]
 	autocrlf = input
 	excludesfile = ~/.gitignore_global
+	compression = -1
+[pull]
+	rebase = true
+[http]
+	postBuffer = 2048M
+	maxRequestBuffer = 1024M
+[https]
+	postBuffer = 2048M
+	maxRequestBuffer = 1024M
+[ssh]
+	postBuffer = 2048M
+	maxRequestBuffer = 1024M
+[pack]
+	windowMemory = 256m
+	packSizeLimit = 256m
+[credential]
+	helper = store
