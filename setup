@@ -6,44 +6,76 @@
 set -e
 set -o pipefail
 
-function logging() {
-  local log_type
-  log_type=$1
-  readonly log_type
+Logging() {
+  local level
+  level=$1
+  readonly level
 
   local msg
   msg=$2
   readonly msg
 
-  local now
-  now=$(date +'%F %H:%M:%S')
-  readonly now
+  local timestamp
+  timestamp=$(date +'%F %H:%M:%S')
+  readonly timestamp
 
-  local log_format="[${now}][${log_type}] ${msg}"
+  local format
+  format="[${timestamp}][${level}] ${msg}"
+  readonly format
 
-  case $log_type in
+  # 忘了这里要不要加 -e
+  # 我记得最早加上的时候，通过curl执行脚本输出会多出来e，所以是删了的，忘了，后面用的时候再看
+  case $level in
   INFO)
-    echo "\033[32m${log_format}\033[0m"
+    echo -e "\033[32m${format}\033[0m"
     ;;
   WARNING)
-    echo "\033[33m${log_format}\033[0m"
+    echo -e "\033[33m${format}\033[0m"
     ;;
   ERROR)
-    echo "\033[31m${log_format}\033[0m"
+    echo -e "\033[31m${format}\033[0m"
     ;;
   esac
 }
 
-function log_info() {
-  logging INFO "$*"
+LogInfo() {
+  Logging INFO "$*"
 }
 
-function log_warning() {
-  logging WARNING "$*"
+LogWarn() {
+  Logging WARNING "$*"
 }
 
-function log_error() {
-  logging ERROR "$*"
+LogError() {
+  Logging ERROR "$*"
+}
+
+PrintSymbols() {
+  # ${#变量名} 获取一个变量值的长度
+  # seq -s ' ' 5 输出 1 2 3 4 5，seq -s 'a' 5 输出 1a2a3a4a5a
+  # sed 's/[0-9]//g' 将 0-9 的数字去掉
+  local symbol
+  symbol=$1
+  readonly symbol
+
+  local length
+  length=$2
+  readonly length
+
+  local result
+  result=$(seq -s "$symbol" "$length" | sed 's/[0-9]//g')
+  readonly result
+  echo "$result"
+}
+
+PrintNotice() {
+  # 设置文本为绿色
+  tput setaf 2
+  PrintSymbols '#' 32
+  echo "$(PrintSymbols ' ' 12)$1$(PrintSymbols ' ' 12)"
+  PrintSymbols '#' 32
+  # 恢复颜色
+  tput sgr0
 }
 
 cd "$HOME"
@@ -52,24 +84,30 @@ ROOT_DIR="$HOME/.melon"
 PROFILES_DIR=$ROOT_DIR/profiles
 
 # 安装melon
-function setup_melon() {
-  log_info "==> 尝试安装 melon"
-
+SetupMelon() {
+  LogInfo "==> 尝试安装 melon"
   rm -rf "$ROOT_DIR"
-  local url=git@github.com:orzcrz/Melon.git
+  local url
+  url=git@github.com:orzcrz/Melon.git
+  readonly url
   git clone --recurse-submodules $url "$ROOT_DIR"
-  log_info "已下载最新版本到本地"
 
   cd "$ROOT_DIR"
-  local py3=$(which python3)
-  log_info "Use python3 path: $py3"
-  local py3_v=`$py3 -V`
-  log_info "python version: $py3_v"
+  local py3
+  py3=$(which python3)
+  readonly py3
 
-  log_info "generate new venv."
+  LogInfo "Use Python3 Path: $py3"
+  local py3_v
+  py3_v=$($py3 -V)
+  readonly py3_v
+  LogInfo "Current Python Version: $py3_v"
+
+  LogInfo "Generate New Venv."
   local venv_path="venv"
   $py3 -m venv $venv_path
 
+  # shellcheck disable=SC1090
   source $venv_path/bin/activate
   
   set +e
@@ -78,19 +116,26 @@ function setup_melon() {
   set -e
 
   cd "$HOME"
+  LogInfo "已下载最新版本到本地"
 }
 
-# arm版本的Mac上安装Homebrew
-function setup_brew_if_needed() {
-  log_info "==> 尝试安装 Homebrew"
-  local cpu_brand=$(sysctl -n machdep.cpu.brand_string)
-  local cpu_arch=$(uname -m)
-  log_info "处理器信息： $cpu_brand | $cpu_arch"
+# homebrew
+SetupBrewIfNeeded() {
+  LogInfo "==> 尝试安装 Homebrew"
+  local cpu_brand
+  cpu_brand=$(sysctl -n machdep.cpu.brand_string)
+  readonly cpu_brand
+
+  local cpu_arch
+  cpu_arch=$(uname -m)
+  readonly cpu_arch
+
+  LogInfo "处理器信息： $cpu_brand | $cpu_arch"
   if [[ "$cpu_brand" =~ "Apple" ]] && [[ "$cpu_arch" =~ "arm" ]]; then
     if command -v brew 1>/dev/null 2>&1; then
-      log_info "已存在，跳过安装"
+      LogInfo "已存在，跳过安装"
     else
-      log_info "安装 arm版 Homebrew"
+      LogInfo "安装 arm 版 homebrew"
       local brew_repo=/opt/homebrew
       local remote_url=https://github.com/Homebrew/brew/tarball/master
       sudo mkdir -p $brew_repo
@@ -98,149 +143,140 @@ function setup_brew_if_needed() {
       curl -L $remote_url | tar xz --strip 1 -C $brew_repo
     fi
   else
-    log_warning "非arm版的没适配，先手动预装吧"
-    log_info '手动执行这段 ==> /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"'
+    LogWarn "非 arm 版的没适配，先手动预装吧"
+    # shellcheck disable=SC2016
+    LogInfo '手动执行这段 ==> /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"'
   fi
-  cd $HOME
+  cd "$HOME"
   if command -v brew 1>/dev/null 2>&1; then
-    log_info "安装成功"
+    LogInfo "安装成功"
   else
-    log_error "安装失败"
+    LogError "安装失败"
     exit 1
   fi
 }
 
 ## pyenv
-function setup_pyenv() {
-  log_info "==> 尝试安装 pyenv"
+SetupPyenv() {
+  LogInfo "==> 尝试安装 pyenv"
   if command -v pyenv 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
+    LogInfo "已存在，跳过安装"
   else
-    brew install pyenv pyenv-virtualenv && log_info "已安装 pyenv"
+    brew install pyenv pyenv-virtualenv && LogInfo "已安装 pyenv"
   fi
   if command -v pyenv 1>/dev/null 2>&1; then
-    log_info "安装成功"
+    LogInfo "安装成功"
   else
-    log_error "安装失败"
+    LogError "安装失败"
   fi
 }
 
 ## rbenv
-function setup_rbenv() {
-  log_info "==> 尝试安装 rbenv"
+SetupRbenv() {
+  LogInfo "==> 尝试安装 rbenv"
   if command -v rbenv 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
+    LogInfo "已存在，跳过安装"
   else
-    brew install rbenv ruby-build rbenv-vars && log_info "已安装 rbenv"
+    brew install rbenv ruby-build rbenv-vars && LogInfo "已安装 rbenv"
   fi
-
   if command -v rbenv 1>/dev/null 2>&1; then
-    log_info "安装成功"
+    LogInfo "安装成功"
   else
-    log_error "安装失败"
+    LogError "安装失败"
   fi
 }
 
 ## nodenv
-function setup_nodenv() {
-    log_info "==> 尝试安装 nodenv"
+SetupNodenv() {
+  LogInfo "==> 尝试安装 nodenv"
   if command -v nodenv 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
+    LogInfo "已存在，跳过安装"
   else
-    brew install nodenv && log_info "已安装 nodenv"
+    brew install nodenv && LogInfo "已安装 nodenv"
   fi
-
   if command -v nodenv 1>/dev/null 2>&1; then
-    log_info "安装成功"
+    LogInfo "安装成功"
   else
-    log_error "安装失败"
+    LogError "安装失败"
   fi
 }
 
 ## wget
-function setup_wget() {
-  ## wget
-  log_info "==> 尝试安装 wget"
+SetupWget() {
+  LogInfo "==> 尝试安装 wget"
   if command -v wget 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
+    LogInfo "已存在，跳过安装"
     return
   fi
-
-  brew install wget && log_info "已安装 wget"
+  brew install wget && LogInfo "已安装 wget"
 }
 
 ## cookiecutter
-function setup_cookiecutter() {
-  log_info "==> 尝试安装 cookiecutter"
+SetupCookiecutter() {
+  LogInfo "==> 尝试安装 cookiecutter"
   if command -v cookiecutter 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
+    LogInfo "已存在，跳过安装"
     return
   fi
-
-  brew install cookiecutter && log_info "已安装 cookiecutter"
+  brew install cookiecutter && LogInfo "已安装 cookiecutter"
 }
 
 ## tree
-function setup_tree() {
-  log_info "==> 尝试安装 cookiecutter"
+SetupTree() {
+  LogInfo "==> 尝试安装 cookiecutter"
   if command -v tree 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
+    LogInfo "已存在，跳过安装"
     return
   fi
-
-  brew install tree && log_info "已安装 tree"
+  brew install tree && LogInfo "已安装 tree"
 }
 
 ## thefuck
-function setup_thefuck() {
-  log_info "==> 尝试安装 thefuck"
+SetupTheFuck() {
+  LogInfo "==> 尝试安装 thefuck"
   if command -v fuck 1>/dev/null 2>&1; then
-    log_info "已存在，跳过安装"
+    LogInfo "已存在，跳过安装"
     return
   fi
-  brew install thefuck && log_info "已安装 thefuck"
+  brew install thefuck && LogInfo "已安装 thefuck"
 }
 
 ## cocoapods
-function setup_cocoapods() {
-  log_info "==> 尝试安装 cocoapods"
-  log_warning "算了，手动装吧，先用 rbenv 切换 ruby 到 cocoapods 需要的版本"
+SetupCocoapods() {
+  LogInfo "==> 尝试安装 cocoapods"
+  LogWarn "算了，手动装吧，先用 rbenv 切换 ruby 到 cocoapods 需要的版本"
 }
 
 # 安装lldb工具
 # https://github.com/facebook/chisel
-function setup_lldb_chisel() {
-  log_info "==> 尝试安装 chisel"
-  brew install chisel && log_info "已安装 chisel"
+SetupChisel() {
+  LogInfo "==> 尝试安装 chisel"
+  brew install chisel && LogInfo "已安装 chisel"
 }
 
-function setup_node() {
-  log_info "==> 尝试安装 node"
-  log_warning "算了，手动装吧，先用 nodenv 切换 node 到需要的版本"
-  log_warning "然后修改镜像 npm config set registry https://registry.npmmirror.com/"
+SetupNode() {
+  LogInfo "==> 尝试安装 node"
+  LogWarn "算了，手动装吧，先用 nodenv 切换 node 到需要的版本"
+  LogWarn "然后修改镜像 npm config set registry https://registry.npmmirror.com/"
 }
 
-echo "$(tput setaf 2)"
-echo "################################"
-echo "  准备配置环境"
-echo "################################"
-echo "$(tput sgr0)"
+PrintNotice "准备配置环境"
 
-setup_melon
+SetupMelon
 
-log_warning "更新以下配置"
-log_warning "$HOME/.pip"
-log_warning "$HOME/.lldbinit"
-log_warning "$HOME/.gitignore_global"
-log_warning "$HOME/.gitconfig"
+LogWarn "更新以下配置"
+LogWarn "$HOME/.pip"
+LogWarn "$HOME/.lldbinit"
+LogWarn "$HOME/.gitignore_global"
+LogWarn "$HOME/.gitconfig"
 
-log_warning "$HOME/.zshrc"
-log_warning "$HOME/.zprofile"
-log_warning "$HOME/.bash_profile"
+LogWarn "$HOME/.zshrc"
+LogWarn "$HOME/.zprofile"
+LogWarn "$HOME/.bash_profile"
 
 ZSH_PLUGIN_DIR="$PROFILES_DIR/oh-my-zsh/custom/plugins"
-log_warning "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
-log_warning "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
+LogWarn "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
+LogWarn "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 
 ## 软链当前配置
 ln -sf "$PROFILES_DIR/.pip" "$HOME/.pip"
@@ -256,19 +292,16 @@ ln -sf "$PROFILES_DIR/.bash_profile" "$HOME/.bash_profile"
 ln -sf "$PROFILES_DIR/zsh-syntax-highlighting" "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
 ln -sf "$PROFILES_DIR/zsh-autosuggestions" "$ZSH_PLUGIN_DIR/zsh-autosuggestions"
 
-setup_brew_if_needed
-setup_pyenv
-setup_rbenv
-setup_nodenv
-setup_wget
-setup_cookiecutter
-setup_tree
-setup_cocoapods
-setup_lldb_chisel
-setup_node
+SetupBrewIfNeeded
+SetupPyenv
+SetupRbenv
+SetupNodenv
+SetupWget
+SetupCookiecutter
+SetupTree
+SetupTheFuck
+SetupCocoapods
+SetupChisel
+SetupNode
 
-echo "$(tput setaf 2)"
-echo "################################"
-echo "  安装完成"
-echo "################################"
-echo "$(tput sgr0)"
+PrintNotice "安装完成"

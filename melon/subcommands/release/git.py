@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-
 """
 Created by changrunze on 2024/5/12
 Copyright © 2024 BaldStudio. All rights reserved.
@@ -9,18 +6,18 @@ Copyright © 2024 BaldStudio. All rights reserved.
 import shutil
 import subprocess
 
+from melon import GIT
 from melon.foundation.logging import logger
 from melon.foundation.annotations import classproperty
-
-_git = shutil.which('git')
 
 
 class Git:
     verbose = False
+
     @classproperty
     def is_valid_repo(cls):
         cmd = [
-            _git, 'rev-parse', '--is-inside-work-tree'
+            GIT, 'rev-parse', '--is-inside-work-tree'
         ]
         logger.debug('Running: %r', cmd)
         if Git.verbose:
@@ -35,7 +32,7 @@ class Git:
     @classproperty
     def head(cls):
         cmd = [
-            _git, 'rev-parse', '--short', 'HEAD'
+            GIT, 'rev-parse', '--short', 'HEAD'
         ]
         logger.debug('Running: %r', cmd)
         process = subprocess.Popen(cmd,
@@ -48,7 +45,7 @@ class Git:
     @classproperty
     def has_any_changed(cls):
         cmd = [
-            _git, 'status', '--porcelain',
+            GIT, 'status', '--porcelain',
         ]
         logger.debug('Running: %r', cmd)
         result = subprocess.check_output(cmd)
@@ -57,7 +54,7 @@ class Git:
     @classproperty
     def remote_url(cls):
         cmd = [
-            _git, 'ls-remote', '--get-url', 'origin'
+            GIT, 'ls-remote', '--get-url', 'origin'
         ]
         logger.debug('Running: %r', cmd)
         return subprocess.check_output(cmd).decode().strip()
@@ -65,7 +62,7 @@ class Git:
     @staticmethod
     def fetch_forced():
         cmd = [
-            _git, 'fetch', '-f', '--tag'
+            GIT, 'fetch', '-f', '--tag'
         ]
         logger.debug('Running: %r', cmd)
         subprocess.check_output(cmd)
@@ -73,7 +70,7 @@ class Git:
     @staticmethod
     def has_tag(tag: str) -> bool:
         cmd = [
-            _git, 'tag', '-l', tag
+            GIT, 'tag', '-l', tag
         ]
         logger.debug('Running: %r', cmd)
         if Git.verbose:
@@ -87,7 +84,7 @@ class Git:
     @staticmethod
     def tagging(version):
         cmd = [
-            _git, 'tag', '-a',
+            GIT, 'tag', '-a',
             version, '-m', 'v%s' % version
         ]
         logger.debug('Running: %r', cmd)
@@ -96,7 +93,7 @@ class Git:
     @staticmethod
     def tagging_forced(version):
         cmd = [
-            _git, 'tag', '-af',
+            GIT, 'tag', '-af',
             version, '-m', 'v%s' % version
         ]
         logger.debug('Running: %r', cmd)
@@ -105,7 +102,7 @@ class Git:
     @staticmethod
     def push_tag_to_remote(version):
         cmd = [
-            _git, 'push',
+            GIT, 'push',
             'origin', version
         ]
         logger.debug('Running: %r', cmd)
@@ -117,7 +114,7 @@ class Git:
     @staticmethod
     def push_tag_to_remote_forced(version):
         cmd = [
-            _git, 'push', '-f',
+            GIT, 'push', '-f',
             'origin', version
         ]
         logger.debug('Running: %r', cmd)

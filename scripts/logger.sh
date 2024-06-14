@@ -4,63 +4,65 @@
 # Copyright © 2022 BaldStudio. All rights reserved.
 
 # debug:0; info:1; warn:2; error:3
-log_level=0
-log_detail=0
+LOG_LEVEL=0
+LOG_DETAIL=0
 
-logging() {
-  local log_type
-  log_type=$1
-  readonly log_type
+Logging() {
+  local level
+  level=$1
+  readonly level
 
   local msg
   msg=$2
   readonly msg
 
-  local now
-  now=$(date +'%F %H:%M:%S')
-  readonly now
+  local timestamp
+  timestamp=$(date +'%F %H:%M:%S')
+  readonly timestamp
 
-  local log_format="[${now}][${log_type}] ${msg}"
-  if [[ ${log_detail} -eq 1 ]]; then
-    log_format="[${now}] [${log_type}] [${FUNCNAME[2]} - $(caller 0 | awk '{print$1}')] ${msg}"
+  local format
+  format="[${timestamp}][${level}] ${msg}"
+  if [[ ${LOG_DETAIL} -eq 1 ]]; then
+    format="[${timestamp}] [${level}] [${FUNCNAME[2]} - $(caller 0 | awk '{print$1}')] ${msg}"
   fi
+  readonly format
 
-  case $log_type in
+  case $level in
   DEBUG)
-    if [[ $log_level -le 0 ]]; then
-      echo -e "\033[37m${log_format}\033[0m"
+    if [[ $LOG_LEVEL -le 0 ]]; then
+      echo -e "\033[37m${format}\033[0m"
     fi
     ;;
   INFO)
-    if [[ $log_level -le 1 ]]; then
-      echo -e "\033[32m${log_format}\033[0m"
+    if [[ $LOG_LEVEL -le 1 ]]; then
+      echo -e "\033[32m${format}\033[0m"
     fi
     ;;
   WARNING)
-    if [[ $log_level -le 2 ]]; then
-      echo -e "\033[33m${log_format}\033[0m"
+    if [[ $LOG_LEVEL -le 2 ]]; then
+      echo -e "\033[33m${format}\033[0m"
     fi
     ;;
   ERROR)
-    if [[ $log_level -le 3 ]]; then
-      echo -e "\033[31m${log_format}\033[0m"
+    if [[ $LOG_LEVEL -le 3 ]]; then
+      echo -e "\033[31m${format}\033[0m"
     fi
     ;;
   esac
 }
 
-log_debug() {
-  logging DEBUG "$*"
+LogDebug() {
+  Logging DEBUG "$*"
 }
 
-log_info() {
-  logging INFO "$*"
+LogInfo() {
+  Logging INFO "$*"
 }
 
-log_warning() {
-  logging WARNING "$*"
+LogWarn() {
+  Logging WARNING "$*"
 }
 
-log_error() {
-  logging ERROR "$*"
+LogError() {
+  Logging ERROR "$*"
 }
