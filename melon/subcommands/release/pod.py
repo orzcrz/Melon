@@ -131,7 +131,7 @@ class Pod:
         ]
         logger.debug('Running: %r', cmd)
         cocoapods_dir = subprocess.check_output(cmd).decode()
-        cocoapods_dir = os.path.abspath(os.path.join(cocoapods_dir, "..", 'cocoapods'))
+        cocoapods_dir = os.path.abspath(os.path.join(cocoapods_dir, '..', 'cocoapods'))
         logger.debug('🩹 find cocoapods dir %s' % cocoapods_dir)
         return cocoapods_dir
 

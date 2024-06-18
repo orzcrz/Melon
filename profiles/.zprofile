@@ -1,3 +1,5 @@
+# 开发环境配置
+
 ## melon
 export MELON_ROOT=$HOME/.melon
 export PATH=$MELON_ROOT/bin:$PATH

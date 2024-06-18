@@ -15,23 +15,23 @@ from melon.foundation.logging import *
 命令行解释器
 '''
 parser = argparse.ArgumentParser(prog='me',
-                                 description="命令行工具箱",
+                                 description='命令行工具箱',
                                  epilog='工具箱版本 %s' % __version__)
 
 parser.add_argument('--verbose',
                     action='store_true',
                     default=False,
-                    help="详细输出")
+                    help='详细输出')
 
 parser.add_argument('--version',
-                    action="version",
-                    help="工具箱版本",
+                    action='version',
+                    help='工具箱版本',
                     version=__version__)
 
 '''
 子命令解释器
 '''
-subcommand_parser = parser.add_subparsers(title="目前支持的功能", dest="command")
+subcommand_parser = parser.add_subparsers(title='目前支持的功能', dest='command')
 subcommands_by_name = {}
 
 for command_class in __subcommands__:
@@ -42,7 +42,7 @@ for command_class in __subcommands__:
     cmd.args_parser.add_argument('--verbose',
                                  action='store_true',
                                  default=False,
-                                 help="详细输出")
+                                 help='详细输出')
     subcommands_by_name[cmd.name] = cmd
 
 
@@ -66,5 +66,5 @@ def main():
         logger.debug('TOTAL COST: {:.4f} ms'.format(cost))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

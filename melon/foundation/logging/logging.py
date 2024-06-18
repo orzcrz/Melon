@@ -20,10 +20,10 @@ class LogLevel:
     NOTSET = logging.NOTSET
 
 
-LOG_FORMAT = ColoredFormatter(
+formatter = ColoredFormatter(
     '%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s%(reset)s')
 stream = logging.StreamHandler()
-stream.setFormatter(LOG_FORMAT)
+stream.setFormatter(formatter)
 
 logger = logging.getLogger('melon')
 logger.addHandler(stream)

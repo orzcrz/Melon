@@ -1,3 +1,5 @@
+# 基本环境配置
+
 ## Themes
 
 ZSH_THEME="ys"
