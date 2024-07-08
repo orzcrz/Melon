@@ -26,6 +26,9 @@ pod = shutil.which('pod')
 
 
 class Pod:
+    def __init__(self):
+        pass
+
     @staticmethod
     def find_podspec_file(target):
         podspec_file = target
@@ -72,7 +75,7 @@ class Pod:
 
     @staticmethod
     def push_spec_to_remote(podspec_file):
-        logger.debug('发布 odspec')
+        logger.debug('发布 podspec')
         repo_name = Pod.find_pod_repo_dir_name()
         cmd = [
             pod, 'repo', 'push', repo_name, podspec_file,

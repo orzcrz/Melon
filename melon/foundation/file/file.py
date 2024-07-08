@@ -20,12 +20,14 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 # 生成软链
-def symlink_force(src, dst):
+def symlink_force(src, dst, is_directory=False):
+    src = os.path.abspath(src)
+    dst = os.path.abspath(dst)
     try:
-        os.symlink(src, dst)
+        os.symlink(src, dst, is_directory)
     except OSError as e:
         if e.errno == errno.EEXIST:
             os.remove(dst)
-            os.symlink(src, dst)
+            os.symlink(src, dst, is_directory)
         else:
             raise e

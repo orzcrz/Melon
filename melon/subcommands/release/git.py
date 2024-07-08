@@ -13,6 +13,9 @@ from melon.foundation.annotations import classproperty
 class Git:
     verbose = False
 
+    def __init__(self):
+        pass
+
     @classproperty
     def is_valid_repo(cls):
         cmd = [
