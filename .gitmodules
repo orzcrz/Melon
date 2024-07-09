@@ -13,3 +13,6 @@
 [submodule "profiles/lldb/dk_lldb"]
 	path = profiles/lldb/dk_lldb
 	url = git@github.com:DerekSelander/LLDB.git
+[submodule "profiles/CodeSnippets"]
+	path = profiles/CodeSnippets
+	url = git@github.com:orzcrz/CodeSnippets.git
