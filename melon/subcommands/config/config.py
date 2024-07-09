@@ -63,7 +63,6 @@ class Config:
     def _update_xctemplate(self):
         xcode_template_path = os.path.join(self._xcode_dev_dir, 'Templates')
         logger.debug(f'xcode_template_path: {xcode_template_path}')
-
         xctemplates_dir = os.path.join(self._root_dir, 'profiles/xctemplates')
         logger.debug(f'xctemplates_dir: {xctemplates_dir}')
 
@@ -72,11 +71,18 @@ class Config:
         cc_template_path = os.path.join(xcode_template_path, "File Templates/MultiPlatform/Source")
         os.makedirs(cc_template_path, exist_ok=True)
         logger.debug(f'cc_template_path: {cc_template_path}')
-        source = os.path.join(xctemplates_dir, cc_template_name)
-        target = os.path.join(cc_template_path, cc_template_name)
-        symlink_force(source, target, is_directory=True)
-        logger.debug(f'生成软链 {target}')
+        source_dir = os.path.join(xctemplates_dir, cc_template_name)
+        target_dir = os.path.join(cc_template_path, cc_template_name)
+        symlink_force(source_dir, target_dir, is_directory=True)
         logger.info(f'更新 {cc_template_name}')
 
     def _update_code_snippet(self):
-        pass
+        xcode_user_data_path = os.path.join(self._xcode_dev_dir, 'UserData')
+        logger.debug(f'xcode_user_data: {xcode_user_data_path}')
+        source_dir = os.path.join(self._root_dir, 'profiles/CodeSnippets')
+        target_dir = os.path.join(xcode_user_data_path, "CodeSnippets")
+        symlink_force(source_dir, target_dir, is_directory=True)
+        logger.info(f'更新 CodeSnippets')
+
+
+
