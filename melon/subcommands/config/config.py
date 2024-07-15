@@ -45,6 +45,10 @@ class Config:
     @args_parser.setter
     def args_parser(self, parser):
         self._args_parser = parser
+        parser.add_argument('-a', '--all',
+                            const=True,
+                            nargs='?',
+                            help='更新所有类型的配置')
         parser.add_argument('--xctemplate',
                             const=True,
                             nargs='?',
@@ -55,9 +59,16 @@ class Config:
                             help='更新 Xcode 代码片段')
 
     def _running(self, args):
+        if args.all:
+            logger.info('更新所有配置')
+            self._update_xctemplate()
+            self._update_code_snippet()
+            return
         if args.xctemplate:
+            logger.info('更新 Xcode 模板')
             self._update_xctemplate()
         if args.code_snippet:
+            logger.info('更新 Xcode 代码片段')
             self._update_code_snippet()
 
     def _update_xctemplate(self):

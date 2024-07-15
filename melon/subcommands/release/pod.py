@@ -4,25 +4,22 @@ Copyright © 2024 BaldStudio. All rights reserved.
 """
 
 import os
-import shutil
 import subprocess
 import tempfile
 import json
 
 from melon.foundation.file import symlink_force
 from melon.foundation.logging import logger
-
+from melon.foundation.global_def import pod, gem
 from .git import Git
 
 POD_SPEC_REPO_NAME = 'baldstudio'
 POD_SPEC_REPO_URL = 'git@github.com:BaldStudio/baldstudio-specs.git'
 POD_SPEC_REPO_ROOT_DIR = os.path.join(os.path.expanduser('~'), '.cocoapods/repos')
 
-POD_PATCH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cocoapods_patches')
-POD_PLUGIN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cocoapods_plugins')
-
-gem = shutil.which('gem')
-pod = shutil.which('pod')
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+POD_PATCH_DIR = os.path.join(CURRENT_DIR, 'cocoapods_patches')
+POD_PLUGIN_DIR = os.path.join(CURRENT_DIR, 'cocoapods_plugins')
 
 
 class Pod:
@@ -158,4 +155,6 @@ class Pod:
             for f in files:
                 # 为了避免找到不同路径下的同名文件，增加上级目录的比较
                 if f == target_file and os.path.basename(root) == basename:
-                    return os.path.join(root, f)
+                    path = os.path.join(root, f)
+                    logger.debug('🩹 find cocoapods file %s' % path)
+                    return str(path)
