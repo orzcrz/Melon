@@ -3,15 +3,15 @@ Created by crzorz on 2024/07/08
 Copyright © 2024 SHEIN. All rights reserved.
 """
 
-import os
-from melon.foundation.logging import logger
-from melon.foundation.file import *
+from melon.commands.core.command import command, Command
+from melon.misc.logging import logger
+from melon.misc.file import *
 
 
-class Config:
-    def __init__(self):
-        self._args_parser = None
-        self._args = None
+@command
+class Config(Command):
+    def __init__(self, cli_group):
+        super().__init__(cli_group)
         self._root_dir = None
         self._xcode_dev_dir = None
 
@@ -20,45 +20,28 @@ class Config:
         return 'config'
 
     @property
-    def help(self):
-        return 'me config'
-
-    @property
     def description(self):
         return '个人配置项'
 
-    @property
-    def args(self):
-        return self._args
+    def prepare_actions(self):
+        super().prepare_actions()
+        self.parser.add_argument('-a', '--all',
+                                 const=True,
+                                 nargs='?',
+                                 help='更新所有类型的配置')
+        self.parser.add_argument('--xctemplate',
+                                 const=True,
+                                 nargs='?',
+                                 help='更新 Xcode 模板')
+        self.parser.add_argument('--code-snippet',
+                                 const=True,
+                                 nargs='?',
+                                 help='更新 Xcode 代码片段')
 
-    @args.setter
-    def args(self, args):
-        self._args = args
+    def run(self, args):
+        super().run(args)
         self._root_dir = os.environ['MELON_ROOT']
         self._xcode_dev_dir = os.path.expanduser('~/Library/Developer/Xcode')
-        self._running(args)
-
-    @property
-    def args_parser(self):
-        return self._args_parser
-
-    @args_parser.setter
-    def args_parser(self, parser):
-        self._args_parser = parser
-        parser.add_argument('-a', '--all',
-                            const=True,
-                            nargs='?',
-                            help='更新所有类型的配置')
-        parser.add_argument('--xctemplate',
-                            const=True,
-                            nargs='?',
-                            help='更新 Xcode 模板')
-        parser.add_argument('--code-snippet',
-                            const=True,
-                            nargs='?',
-                            help='更新 Xcode 代码片段')
-
-    def _running(self, args):
         if args.all:
             logger.info('更新所有配置')
             self._update_xctemplate()
@@ -94,6 +77,3 @@ class Config:
         target_dir = os.path.join(xcode_user_data_path, "CodeSnippets")
         symlink_force(source_dir, target_dir, is_directory=True)
         logger.info(f'更新 CodeSnippets')
-
-
-

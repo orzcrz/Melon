@@ -8,9 +8,9 @@ import subprocess
 import tempfile
 import json
 
-from melon.foundation.file import symlink_force
-from melon.foundation.logging import logger
-from melon.foundation.global_def import pod, gem
+from melon.misc.file import symlink_force
+from melon.misc.logging import logger
+from melon.misc.global_def import pod, gem
 from .git import Git
 
 POD_SPEC_REPO_NAME = 'baldstudio'

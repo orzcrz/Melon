@@ -5,9 +5,9 @@ Copyright © 2024 BaldStudio. All rights reserved.
 
 import subprocess
 
-from melon.foundation.global_def import git
-from melon.foundation.logging import logger
-from melon.foundation.annotations import classproperty
+from melon.misc.global_def import git
+from melon.misc.logging import logger
+from melon.misc.annotations import classproperty
 
 
 class Git:
@@ -17,7 +17,7 @@ class Git:
         pass
 
     @classproperty
-    def is_valid_repo(cls):
+    def is_valid_repo(self):
         cmd = [
             git, 'rev-parse', '--is-inside-work-tree'
         ]
@@ -45,7 +45,7 @@ class Git:
 
     # 检查 git 是否有改动
     @classproperty
-    def has_any_changed(cls):
+    def has_any_changed(self):
         cmd = [
             git, 'status', '--porcelain',
         ]
@@ -54,7 +54,7 @@ class Git:
         return bool(result.decode())
 
     @classproperty
-    def remote_url(cls):
+    def remote_url(self):
         cmd = [
             git, 'ls-remote', '--get-url', 'origin'
         ]
