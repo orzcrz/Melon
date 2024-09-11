@@ -10,7 +10,7 @@ import json
 
 from melon.misc.file import symlink_force
 from melon.misc.logging import logger
-from melon.misc.global_def import pod, gem
+from melon.misc.global_def import POD, GEM
 from .git import Git
 
 POD_SPEC_REPO_NAME = 'baldstudio'
@@ -50,7 +50,7 @@ class Pod:
         podspec_json = os.path.join(temp_dir, podspec_file + '.json')
         with open(podspec_json, 'w') as f:
             cmd = [
-                pod, 'ipc', 'spec', podspec_file,
+                POD, 'ipc', 'spec', podspec_file,
             ]
             logger.debug('Running: %r', cmd)
             subprocess.Popen(cmd, stdout=f).wait()
@@ -75,7 +75,7 @@ class Pod:
         logger.debug('发布 podspec')
         repo_name = Pod.find_pod_repo_dir_name()
         cmd = [
-            pod, 'repo', 'push', repo_name, podspec_file,
+            POD, 'repo', 'push', repo_name, podspec_file,
             '--allow-warnings',
             '--force',
         ]
@@ -85,7 +85,7 @@ class Pod:
     @staticmethod
     def install_plugins():
         cmd = [
-            gem, 'install',
+            GEM, 'install',
         ]
         plugin_dir = POD_PLUGIN_DIR
         for root, _, files in os.walk(plugin_dir):
@@ -127,7 +127,7 @@ class Pod:
     @staticmethod
     def find_cocoapods_dir() -> str:
         cmd = [
-            gem, 'which', 'cocoapods',
+            GEM, 'which', 'cocoapods',
         ]
         logger.debug('Running: %r', cmd)
         cocoapods_dir = subprocess.check_output(cmd).decode()

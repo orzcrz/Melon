@@ -7,7 +7,7 @@ import subprocess
 
 from melon.commands.core.command import command, Command
 from melon.misc.logging import logger
-from melon.misc.global_def import git
+from melon.misc.global_def import GIT
 
 
 @command
@@ -29,23 +29,26 @@ class Workspace(Command):
                             help='新建工作空间, 不指定名称则默认使用branch名称')
         self.parser.add_argument('-r', '--remove', nargs='?', const=True,
                             help='删除工作空间，不指定名称则默认使用branch名称')
-        self.parser.add_argument('-b', '--branch', required=True,
+        self.parser.add_argument('-b', '--branch',
                             help='指定分支名，不指定默认使用 add/remove 的参数')
         self.parser.add_argument('-t', '--track', nargs='?', const=True,
                             help='本地存在分支时，指定追踪远程同名分支')
+        self.parser.add_argument('-l', '--list', nargs='?', const=True,
+                            help='列出所有工作空间')
 
     def run(self, args):
         super().run(args)
-        if args.add:
+        if args.list:
+            self._list_workspace()
+        elif args.add:
             self._add_workspace()
         elif args.remove:
             self._remove_workspace()
-        self._list_workspace()
 
     @staticmethod
     def _list_workspace():
         cmd = [
-            git, 'worktree', 'list'
+            GIT, 'worktree', 'list'
         ]
         logger.debug('Running: %r', cmd)
         logger.info('Here is Your Workspace 👇👇👇')
@@ -62,7 +65,7 @@ class Workspace(Command):
             name = self.args.add.strip()
 
         cmd = [
-            git, 'worktree', 'add', '../%s' % name,
+            GIT, 'worktree', 'add', '../%s' % name,
         ]
         if self.args.track:
             cmd.extend([
@@ -86,14 +89,14 @@ class Workspace(Command):
             name = self.args.remove.strip()
 
         cmd = [
-            git, 'worktree', 'remove', name, '--force'
+            GIT, 'worktree', 'remove', name, '--force'
         ]
         logger.debug('Running: %r', cmd)
         logger.warn('【 REMOVE 】%s,【 BRANCH 】%s', name, branch)
         subprocess.check_output(cmd)
 
         cmd = [
-            git, 'branch', '-D', branch
+            GIT, 'branch', '-D', branch
         ]
         logger.debug('Running: %r', cmd)
         subprocess.check_output(cmd)
