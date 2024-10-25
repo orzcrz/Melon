@@ -59,8 +59,8 @@ class Release(Command):
         if args.pod_plugin:
             Pod.install_plugins()
             return True
-        env = '稳定版本' if args.stable else '开发版本'
-        logger.info('📌 确认发行版本 [ %s ]' % env)
+        env = '正式版本' if args.stable else '开发版本'
+        logger.info('📌 确认发布版本 [ %s ]' % env)
         time.sleep(1)
         if not self._preflight(args):
             return
@@ -68,11 +68,13 @@ class Release(Command):
 
     def _releasing(self, args):
         version = args.version
-        logger.info('🍘 准备发布版本 %s' % version)
         if args.stable:
             if Git.has_tag(version):
                 logger.error('版本号 %s 已存在', version)
                 return False
+        else:
+            version += '-SNAPSHOT'
+        logger.info('🍘 准备发布版本 %s' % version)
         self._start_loading()
 
         Git.tagging_forced(version)

@@ -3,9 +3,7 @@
 # Created by crzorz on 2022/09/15
 # Copyright © 2022 BaldStudio. All rights reserved.
 
-set -e
-set -u
-set -o pipefail
+set -euo pipefail
 
 # 获取脚本文件所在的目录
 MELON=$(dirname "${BASH_SOURCE[0]}")

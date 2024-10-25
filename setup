@@ -3,8 +3,7 @@
 # Created by crzorz on 2022/09/15
 # Copyright © 2022 BaldStudio. All rights reserved.
 
-set -e
-set -o pipefail
+set -euo pipefail
 
 Logging() {
   local level
@@ -86,32 +85,29 @@ PROFILES_DIR=$ROOT_DIR/profiles
 # 安装melon
 SetupMelon() {
   LogInfo "==> 尝试安装 melon"
+
   rm -rf "$ROOT_DIR"
+
   local url
   url=git@github.com:orzcrz/Melon.git
   readonly url
   git clone --recurse-submodules $url "$ROOT_DIR"
 
   cd "$ROOT_DIR"
+
   local py3
   py3=$(which python3)
   readonly py3
+  LogInfo "Use Python3 Path: $py3, Version: $($py3 -V)"
 
-  LogInfo "Use Python3 Path: $py3"
-  local py3_v
-  py3_v=$($py3 -V)
-  readonly py3_v
-  LogInfo "Current Python Version: $py3_v"
-
-  LogInfo "Generate New Venv."
   local venv_path="venv"
   $py3 -m venv $venv_path
-
   # shellcheck disable=SC1090
   source $venv_path/bin/activate
-  
+  LogInfo "Generate New Venv."
+
   set +e
-  pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
+  pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
   python -m pip install --upgrade pip
   set -e
 

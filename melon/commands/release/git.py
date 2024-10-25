@@ -21,7 +21,7 @@ class Git:
         cmd = [
             GIT, 'rev-parse', '--is-inside-work-tree'
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         if Git.verbose:
             return subprocess.check_output(cmd).decode()
         process = subprocess.Popen(cmd,
@@ -34,9 +34,11 @@ class Git:
     @classproperty
     def head(self):
         cmd = [
-            GIT, 'rev-parse', '--short', 'HEAD'
+            GIT, 'rev-parse',
+            # '--short',
+            'HEAD',
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         process = subprocess.Popen(cmd,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
@@ -49,7 +51,7 @@ class Git:
         cmd = [
             GIT, 'status', '--porcelain',
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         result = subprocess.check_output(cmd)
         return bool(result.decode())
 
@@ -58,7 +60,7 @@ class Git:
         cmd = [
             GIT, 'ls-remote', '--get-url', 'origin'
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         return subprocess.check_output(cmd).decode().strip()
 
     @staticmethod
@@ -66,7 +68,7 @@ class Git:
         cmd = [
             GIT, 'fetch', '-f', '--tag'
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         subprocess.check_output(cmd)
 
     @staticmethod
@@ -74,7 +76,7 @@ class Git:
         cmd = [
             GIT, 'tag', '-l', tag
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         if Git.verbose:
             return tag == subprocess.check_output(cmd).decode().strip()
         process = subprocess.Popen(cmd,
@@ -88,7 +90,7 @@ class Git:
         cmd = [
             GIT, 'tag', '-a', version, '-m', 'v%s' % version
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         subprocess.check_output(cmd)
 
     @staticmethod
@@ -96,7 +98,7 @@ class Git:
         cmd = [
             GIT, 'tag', '-af', version, '-m', 'v%s' % version
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         subprocess.check_output(cmd)
 
     @staticmethod
@@ -104,7 +106,7 @@ class Git:
         cmd = [
             GIT, 'push', 'origin', version
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         if Git.verbose:
             subprocess.check_output(cmd)
         else:
@@ -115,7 +117,7 @@ class Git:
         cmd = [
             GIT, 'push', '-f', 'origin', version
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         if Git.verbose:
             subprocess.check_output(cmd)
         else:

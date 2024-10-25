@@ -38,12 +38,12 @@ class Workspace(Command):
 
     def run(self, args):
         super().run(args)
-        if args.list:
-            self._list_workspace()
-        elif args.add:
+        if args.add:
             self._add_workspace()
         elif args.remove:
             self._remove_workspace()
+        else:
+            self._list_workspace()
 
     @staticmethod
     def _list_workspace():

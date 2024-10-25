@@ -13,9 +13,9 @@ from melon.misc.logging import logger
 from melon.misc.global_def import POD, GEM
 from .git import Git
 
-POD_SPEC_REPO_NAME = 'baldstudio'
-POD_SPEC_REPO_URL = 'git@github.com:BaldStudio/baldstudio-specs.git'
-POD_SPEC_REPO_ROOT_DIR = os.path.join(os.path.expanduser('~'), '.cocoapods/repos')
+POD_SPEC_REPO_NAME = os.environ.get('POD_SPEC_REPO_NAME', 'baldstudio')
+POD_SPEC_REPO_URL = os.environ.get('POD_SPEC_REPO_URL', 'git@github.com:BaldStudio/baldstudio-specs.git')
+POD_SPEC_REPO_ROOT_DIR = os.environ.get('POD_SPEC_REPO_ROOT_DIR', os.path.join(os.path.expanduser('~'), '.cocoapods/repos'))
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 POD_PATCH_DIR = os.path.join(CURRENT_DIR, 'cocoapods_patches')
@@ -52,7 +52,7 @@ class Pod:
             cmd = [
                 POD, 'ipc', 'spec', podspec_file,
             ]
-            logger.debug('Running: %r', cmd)
+            logger.debug('Running: %r', ' '.join(cmd))
             subprocess.Popen(cmd, stdout=f).wait()
         logger.debug('生成 podspec json 文件：%s', podspec_json)
         return podspec_json
@@ -79,7 +79,7 @@ class Pod:
             '--allow-warnings',
             '--force',
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         subprocess.check_output(cmd)
 
     @staticmethod
@@ -96,7 +96,7 @@ class Pod:
                     logger.debug('🩹 找到插件文件 %s' % src_file)
                     logger.info('🩹 安装插件 %s' % src_file)
                     cmd.append(src_file)
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         subprocess.check_output(cmd)
 
     # 给 cocoapods 打补丁
@@ -129,7 +129,7 @@ class Pod:
         cmd = [
             GEM, 'which', 'cocoapods',
         ]
-        logger.debug('Running: %r', cmd)
+        logger.debug('Running: %r', ' '.join(cmd))
         cocoapods_dir = subprocess.check_output(cmd).decode()
         cocoapods_dir = os.path.abspath(os.path.join(cocoapods_dir, '..', 'cocoapods'))
         logger.debug('🩹 find cocoapods dir %s' % cocoapods_dir)
@@ -143,6 +143,7 @@ class Pod:
             if d.startswith(POD_SPEC_REPO_NAME):
                 os.chdir(os.path.join(repos_dir, d))
                 current = Git.remote_url
+                logger.debug('当前私有仓库地址为 %s', current)
                 if current.lower() == POD_SPEC_REPO_URL.lower():
                     logger.debug('当前私有仓库名称为 %s', d)
                     return d
