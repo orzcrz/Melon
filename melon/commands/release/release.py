@@ -49,6 +49,9 @@ class Release(Command):
                                  const=True,
                                  nargs='?',
                                  help='发布正式版')
+        self.parser.add_argument('-s', '--source',
+                                 type=str,
+                                 help='指定源，名字就可以，可以通过 pod repo list 查看当前源信息')
 
     def run(self, args):
         super().run(args)
@@ -84,7 +87,7 @@ class Release(Command):
         if not podspec_json:
             return False
         Pod.update_podspec_json(podspec_json, version)
-        Pod.push_spec_to_remote(podspec_json)
+        Pod.push_spec_to_remote(podspec_json, args.source)
 
         self._end_loading()
         self._postflight()

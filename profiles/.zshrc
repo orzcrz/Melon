@@ -26,3 +26,4 @@ source $MY_ZSH/oh-my-zsh.sh
 ## Source
 
 [ -f ~/.bash_profile ] && source ~/.bash_profile
+[ -f ~/.bashrc ] && source ~/.bashrc

@@ -21,11 +21,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 POD_PATCH_DIR = os.path.join(CURRENT_DIR, 'cocoapods_patches')
 POD_PLUGIN_DIR = os.path.join(CURRENT_DIR, 'cocoapods_plugins')
 
-
 class Pod:
-    def __init__(self):
-        pass
-
     @staticmethod
     def find_podspec_file(target):
         podspec_file = target
@@ -71,9 +67,10 @@ class Pod:
                 f.write(json.dumps(json_data, indent=2))
 
     @staticmethod
-    def push_spec_to_remote(podspec_file):
-        logger.debug('发布 podspec')
-        repo_name = Pod.find_pod_repo_dir_name()
+    def push_spec_to_remote(podspec_file, source):
+        source = source or POD_SPEC_REPO_NAME
+        logger.debug(f'发布 podspec 到 {source}')
+        repo_name = Pod.find_pod_repo_dir_name(source)
         cmd = [
             POD, 'repo', 'push', repo_name, podspec_file,
             '--allow-warnings',
@@ -112,11 +109,8 @@ class Pod:
                 if f.endswith('.rb'):
                     src_file = os.path.join(root, f)
                     logger.debug('🩹 找到补丁文件 %s' % src_file)
-
                     # 找到对应文件替换
-                    dst_file = Pod.find_cocoapods_file(cocoapods_dir,
-                                                       f,
-                                                       os.path.basename(root))
+                    dst_file = Pod.find_cocoapods_file(cocoapods_dir, f, os.path.basename(root))
                     if not dst_file:
                         logger.warn('未找到补丁对应的源文件')
                         continue
@@ -136,19 +130,17 @@ class Pod:
         return cocoapods_dir
 
     @staticmethod
-    def find_pod_repo_dir_name():
-        logger.debug('寻找私有仓库 %s 目录', POD_SPEC_REPO_NAME)
+    def find_pod_repo_dir_name(source):
+        logger.debug(f'寻找私有仓库 {source} 目录')
         repos_dir = POD_SPEC_REPO_ROOT_DIR
         for d in os.listdir(repos_dir):
-            if d.startswith(POD_SPEC_REPO_NAME):
+            if d == source:
                 os.chdir(os.path.join(repos_dir, d))
                 current = Git.remote_url
-                logger.debug('当前私有仓库地址为 %s', current)
-                if current.lower() == POD_SPEC_REPO_URL.lower():
-                    logger.debug('当前私有仓库名称为 %s', d)
-                    return d
+                logger.debug(f'当前私有仓库名称为 {d}，地址为 {current}')
+                return d
         logger.error('找不到 %s 仓库', POD_SPEC_REPO_NAME)
-
+    
     # 查找补丁对应的 cocoapods 源文件
     @staticmethod
     def find_cocoapods_file(cocoapods_dir, target_file, basename) -> str:
